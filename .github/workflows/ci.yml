@@ -1,6 +1,6 @@
 name: Run Flask Tests
 
-on
+on:
   push:
   pull_request:
 
