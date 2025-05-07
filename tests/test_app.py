@@ -1,11 +1,12 @@
 import pytest
-from app import app, db, Employee
-from datetime import date 
+from app import create_app, db, Employee
 
 @pytest.fixture
 def client():
+    app = create_app()
     app.config['TESTING'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  # use in-memory DB
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+
     with app.test_client() as client:
         with app.app_context():
             db.create_all()
@@ -21,7 +22,7 @@ def test_add_employee(client):
         'name': 'Test User',
         'position': 'Tester',
         'department': 'QA',
-        'hire_date': '2024-1-1',
+        'hire_date': '2024-01-01',
         'salary': 50000
     }, follow_redirects=True)
 

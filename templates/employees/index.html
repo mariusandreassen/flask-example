@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Employees</title>
+  <style>
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Employee Directory</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Position</th>
+        <th>Department</th>
+        <th>Hire Date</th>
+        <th>Salary</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for employee in employees %}
+      <tr>
+        <td>{{ employee.name }}</td>
+        <td>{{ employee.position }}</td>
+        <td>{{ employee.department or '—' }}</td>
+        <td>{{ employee.hire_date or '—' }}</td>
+        <td>${{ "%.2f"|format(employee.salary) if employee.salary else '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
+<form method="POST" action="{{ url_for('routes.delete_employee', employee_id=employee.id) }}" onsubmit="return confirm('Are you sure?');">
+  <a href="{{ url_for('routes.edit_employee', employee_id=employee.id) }}">Edit</a>
+  <button type="submit">Delete</button>
+</form>
