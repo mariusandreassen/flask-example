@@ -9,7 +9,15 @@ login_manager.login_view = 'auth.login'
 
 def create_app():
     app = Flask(__name__, template_folder="../templates", static_folder="../static")
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data/dev.db"
+
+    # Setting base dir 
+    basedir = os.path.abspath(os.path.dirname(__file__))
+
+    # Setting up the database directory
+    db_dir = os.path.join(basedir, '../data')
+
+    # Using Fstring to insert the database directory into the URI. Python has issues with relative pathing. 
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(db_dir, 'dev.db')}"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.secret_key = os.getenv("SECRET_KEY", "dev-secret")
 
