@@ -23,23 +23,18 @@ def create_app():
 
     db.init_app(app)
     login_manager.init_app(app)
-
+    from .models import User
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+    # create tables and seed *inside* the app context
     with app.app_context():
-        from .models import User, Employee  # Import models here to avoid circular issues
-
-        @login_manager.user_loader
-        def load_user(user_id):
-            return User.query.get(int(user_id))
-
-        try:
-            db.create_all()
-        except Exception as e:
-            print(f"Database creation failed: {e}")
-            raise
+        from .models import Employee, Department
+        db.create_all()
 
         if os.getenv("FLASK_ENV") == "development" and os.getenv("FORCE_SEED") == "true":
             from .seed_db import seed_database
-            seed_database(db, Employee)
+            seed_database(db, Employee, Department, User)
 
     # Register Blueprints
     from .routes import routes as routes_blueprint

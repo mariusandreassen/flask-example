@@ -21,6 +21,7 @@
         <th>Department</th>
         <th>Hire Date</th>
         <th>Salary</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -28,16 +29,18 @@
       <tr>
         <td>{{ employee.name }}</td>
         <td>{{ employee.position }}</td>
-        <td>{{ employee.department or '—' }}</td>
+        <td>{{ employee.department.name if employee.department else '—' }}</td>
         <td>{{ employee.hire_date or '—' }}</td>
         <td>${{ "%.2f"|format(employee.salary) if employee.salary else '—' }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('routes.delete_employee', employee_id=employee.id) }}" onsubmit="return confirm('Are you sure?');">
+            <a href="{{ url_for('routes.edit_employee', employee_id=employee.id) }}">Edit</a>
+            <button type="submit">Delete</button>
+          </form>
+        </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </body>
 </html>
-<form method="POST" action="{{ url_for('routes.delete_employee', employee_id=employee.id) }}" onsubmit="return confirm('Are you sure?');">
-  <a href="{{ url_for('routes.edit_employee', employee_id=employee.id) }}">Edit</a>
-  <button type="submit">Delete</button>
-</form>

@@ -9,7 +9,7 @@ departments = Blueprint('departments', __name__)
 @login_required
 def list_departments():
     all_departments = Department.query.all()
-    return render_template('departments/list.html', departments=all_departments)
+    return render_template('department/list.html', departments=all_departments)
 
 @departments.route('/departments/add', methods=['GET', 'POST'])
 @login_required
@@ -26,7 +26,7 @@ def add_department():
         flash('Department added successfully.')
         return redirect(url_for('departments.list_departments'))
 
-    return render_template('departments/add.html')
+    return render_template('department/add.html')
 
 @departments.route('/departments/edit/<int:department_id>', methods=['GET', 'POST'])
 @login_required
@@ -39,7 +39,7 @@ def edit_department(department_id):
         flash('Department updated successfully.')
         return redirect(url_for('departments.list_departments'))
 
-    return render_template('departments/edit.html', department=department)
+    return render_template('department/edit.html', department=department)
 
 @departments.route('/departments/delete/<int:department_id>')
 @login_required

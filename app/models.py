@@ -8,14 +8,13 @@ from flask_login import UserMixin
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), unique=True, nullable=False)  # e.g., 'admin', 'hr', 'developer'
+    name = db.Column(db.String(50), unique=True, nullable=False)
     description = db.Column(db.String(255))
 
     users = db.relationship('User', backref='role', lazy=True)
 
     def __repr__(self):
         return f"<Role {self.name}>"
-
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -24,7 +23,6 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(120), unique=True)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
-    employee = db.relationship('Employee', back_populates='user', uselist=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -40,8 +38,6 @@ class Department(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
 
-    employees = db.relationship('Employee', backref='department', lazy=True)
-
     def __repr__(self):
         return f"<Department {self.name}>"
 
@@ -53,10 +49,8 @@ class Employee(db.Model):
     position = db.Column(db.String(50), nullable=False)
     hire_date = db.Column(db.Date)
     salary = db.Column(db.Float)
-    department_id = db.Column(db.Integer, db.ForeignKey('departments.id'))
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    user = db.relationship('User', back_populates='employee')
+    department_id = db.Column(db.Integer, db.ForeignKey('departments.id'))  # Foreign key to Department
+    department = db.relationship('Department', backref='employees')  # Relationship to Department
 
     def __repr__(self):
         return f"<Employee {self.name} - {self.position}>"

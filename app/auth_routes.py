@@ -49,7 +49,7 @@ def login():
         if not user or not user.check_password(password):
             flash('Incorrect credentials.')
             return redirect(url_for('auth.login'))
-        
+    
 
         login_user(user, remember=True) 
         flash('Logged in successfully.')
