@@ -3,7 +3,7 @@ name: CI - Build, Test & Coverage
 on:
   push:
     branches:
-      - main
+      - '**'
   pull_request:
 
 jobs:
