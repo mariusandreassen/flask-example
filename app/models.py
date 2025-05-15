@@ -51,6 +51,7 @@ class Employee(db.Model):
     salary = db.Column(db.Float)
     department_id = db.Column(db.Integer, db.ForeignKey('departments.id'))  # Foreign key to Department
     department = db.relationship('Department', backref='employees')  # Relationship to Department
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'))
 
     def __repr__(self):
         return f"<Employee {self.name} - {self.position}>"
@@ -122,7 +123,12 @@ class Project(db.Model):
     is_active = db.Column(db.Boolean, default=True)
 
     tasks = db.relationship('Task', backref='project', lazy=True)
-    employees = db.relationship('Employee', backref='project', lazy=True)
+    employees = db.relationship(  
+        'Employee',
+        backref='project',
+        lazy=True,
+        primaryjoin='Project.id==Employee.project_id'
+    )
 
     def __repr__(self):
         return f"<Project {self.name}>"
