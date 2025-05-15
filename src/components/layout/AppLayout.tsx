@@ -46,7 +46,7 @@ function LayoutContent({ children }: AppLayoutProps) {
 
   return (
     <div className="flex h-screen bg-background">
-      <Sidebar collapsible="icon" variant="sidebar" defaultOpen={true}>
+      <Sidebar collapsible="icon" variant="sidebar">
         <SidebarHeader className="p-0 border-b border-sidebar-border">
           <div className={cn(
             "flex items-center justify-between h-16",
