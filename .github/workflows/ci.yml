@@ -30,7 +30,26 @@ jobs:
           pytest --cov=app --cov-report=term-missing --cov-report=html --disable-warnings
 
       - name: Upload HTML coverage report as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.1.3
         with:
           name: html-coverage-report
           path: htmlcov/
+
+  docker-build-and-push:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_LOGIN }}" --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build -t mariusandreassen/flask-example:latest .
+
+      - name: Push Docker image
+        run: |
+          docker push mariusandreassen/flask-example:latest
