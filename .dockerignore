@@ -10,3 +10,4 @@ dev.db
 .git
 .gitlab/
 .idea/
+.pytest_cache/
