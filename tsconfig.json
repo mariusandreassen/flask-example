@@ -1,5 +1,13 @@
+// tsconfig.json (repo root)
 {
   "compilerOptions": {
+    // ─── Let "@/…" resolve to frontend/src/… ───────────────────────────────
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./frontend/src/*"]
+    },
+
+    // ─── Standard Next.js + TS settings ───────────────────────────────────
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -7,21 +15,28 @@
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
+
     "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+      { "name": "next" }
+    ]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    // Next.js type shims
+    "./next-env.d.ts",
+    // Your Next.js App Router source
+    "./frontend/src/**/*",
+    // Any other TS/TSX in the repo
+    "./**/*.ts",
+    "./**/*.tsx",
+    // Next.js generated types (after you’ve done at least one build)
+    "./.next/types/**/*.ts"
+  ],
   "exclude": ["node_modules"]
 }

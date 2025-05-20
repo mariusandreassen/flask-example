@@ -1,0 +1,71 @@
+stages:
+  - test
+  - build
+  - deploy_staging
+  - deploy_production
+
+image: docker:20.10.16
+
+variables:
+  IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+  IMAGE: $CI_REGISTRY_IMAGE:$IMAGE_TAG
+  DOCKER_DRIVER: overlay2
+
+before_script:
+  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+
+test:
+  stage: test
+  image: python:3.10-slim
+  before_script:
+    - pip install --user -r backend/requirements-dev.txt
+    - export PATH="$PATH:/root/.local/bin"
+  script:
+    - pytest --maxfail=1 --disable-warnings --exitfirst --cov=app --cov-report=xml
+  artifacts:
+    when: always
+    paths:
+      - coverage.xml
+build:
+  stage: build
+  services:
+    - name: docker:20.10.16-dind
+      command: ["--insecure-registry", "$CI_REGISTRY"]
+  variables:
+    IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+    IMAGE: $CI_REGISTRY_IMAGE:$IMAGE_TAG
+    DOCKER_DRIVER: overlay2
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+  script:
+    - docker build -t "$IMAGE" .
+    - docker push "$IMAGE"
+  artifacts:
+    expire_in: 1 week
+    reports:
+      dotenv: .env  
+
+deploy_staging:
+  stage: deploy_staging
+  image: bitnami/kubectl:latest
+  before_script:
+    - echo "$KUBE_CONFIG_STAGING" | base64 -d > kubeconfig
+    - export KUBECONFIG=$PWD/kubeconfig
+  script:
+    - kubectl set image deployment/myapp-deployment myapp-container="$IMAGE" -n staging
+    - kubectl rollout status deployment/myapp-deployment -n staging
+  only:
+    - main
+
+deploy_production:
+  stage: deploy_production
+  image: bitnami/kubectl:latest
+  when: manual
+  before_script:
+    - echo "$KUBE_CONFIG_PRODUCTION" | base64 -d > kubeconfig
+    - export KUBECONFIG=$PWD/kubeconfig
+  script:
+    - kubectl set image deployment/myapp-deployment myapp-container="$IMAGE" -n production
+    - kubectl rollout status deployment/myapp-deployment -n production
+  only:
+    - main
